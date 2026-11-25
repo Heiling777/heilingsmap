@@ -9,11 +9,9 @@
         body { margin: 0; padding: 0; font-family: sans-serif; background-color: #fce4ec; }
         #map { height: 100vh; width: 100%; background-color: #fce4ec; }
 
-        /* ✨ 终极温柔滤镜：去掉花花绿绿，只留淡粉和清蓝 */
+        /* ✨ 治愈系干净滤镜：把极简白底图染成温柔的粉色 */
         .leaflet-tile-pane {
-            filter: grayscale(80%) sepia(40%) hue-rotate(310deg) brightness(1.1) contrast(0.8) saturate(2);
-            /* 用正片叠底让粉色融合得更自然 */
-            mix-blend-mode: multiply;
+            filter: sepia(0.6) saturate(2) hue-rotate(315deg) brightness(1.05);
         }
 
         /* 弹窗样式 */
@@ -79,10 +77,10 @@
     <script>
         var map = L.map('map').setView([23.1291, 113.2644], 12);
 
-        // 高德地图底图，国内直连
-        L.tileLayer('https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
-            attribution: '© 高德地图',
-            maxZoom: 18
+        // 使用 Carto Light 极简底图（无高速、无杂乱文字）
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap © CARTO',
+            maxZoom: 19
         }).addTo(map);
 
         // 深粉色水滴地标

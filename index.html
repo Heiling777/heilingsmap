@@ -9,13 +9,12 @@
         body { margin: 0; padding: 0; font-family: sans-serif; background-color: #ffcce0; }
         #map { height: 100vh; width: 100%; background-color: #ffcce0; }
 
-        /* 💥 终极暴力染色滤镜：粉蓝分明，色彩拉满 */
+        /* 完美粉蓝滤镜：陆地染粉，水系留蓝，街道清晰可见 */
         .leaflet-tile-pane {
-            /* 去色后调高对比，把原本的颜色全部抽掉，准备染色 */
-            filter: contrast(1.3) brightness(1.2) invert(1) sepia(1) saturate(8) hue-rotate(300deg);
+            filter: sepia(0.4) saturate(2.5) hue-rotate(315deg) brightness(1.05);
         }
 
-        /* 极简风格的白色弹窗 */
+        /* 弹窗样式 */
         .leaflet-popup-content-wrapper {
             background: rgba(255, 255, 255, 0.98);
             border-radius: 12px;
@@ -61,7 +60,7 @@
         }
         .popup-btn:hover { background-color: #4d8ce6; }
 
-        /* 已写好的批注列表 */
+        /* 批注列表 */
         .msg-list { margin-top: 15px; max-height: 200px; overflow-y: auto; }
         .msg-item { 
             border-bottom: 1px dashed #eee; 
@@ -77,11 +76,13 @@
     <div id="map"></div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // 聚焦广州
         var map = L.map('map').setView([23.1291, 113.2644], 11);
 
-        // 使用信息最全的 OSM 标准底图
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap',
+        // 使用自带颜色的 Voyager 底图（海是浅蓝，地是白）
+        // 配合上面的滤镜，就能完美变成粉底蓝水
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_5fvj_1_73567b6107ac9f11563207c5', {
+            attribution: '© OpenStreetMap © CARTO',
             maxZoom: 19
         }).addTo(map);
 

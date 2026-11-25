@@ -6,21 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        body { margin: 0; padding: 0; font-family: sans-serif; }
-        #map { height: 100vh; width: 100%; }
-        
-        /* 魔法滤镜：完美粉色陆地 + 湛蓝水系 */
+        body { margin: 0; padding: 0; font-family: sans-serif; background-color: #ffcce0; }
+        #map { height: 100vh; width: 100%; background-color: #ffcce0; }
+
+        /* 💥 终极暴力染色滤镜：粉蓝分明，色彩拉满 */
         .leaflet-tile-pane {
-            /* 第一层滤镜：提亮并去色，准备上色 */
-            filter: grayscale(100%) brightness(1.15) contrast(0.85);
-            /* 使用混合模式把灰白染成粉色 */
-            mix-blend-mode: multiply; 
-            opacity: 0.95;
-        }
-        
-        /* 单独给地图容器加一层粉色底色，混合后陆地变粉 */
-        #map {
-            background-color: #ffb6c1; /* 樱花粉底色 */
+            /* 去色后调高对比，把原本的颜色全部抽掉，准备染色 */
+            filter: grayscale(100%) contrast(1.3) brightness(1.2) sepia(1) saturate(8) hue-rotate(300deg);
         }
 
         /* 极简风格的白色弹窗 */
@@ -87,10 +79,9 @@
     <script>
         var map = L.map('map').setView([23.1291, 113.2644], 11);
 
-        // 换成极其干净的灰白底图（Carto Light No Labels）
-        // 它有极其详细的街道、水系、建筑轮廓，但没有杂乱的颜色
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-            attribution: '© OpenStreetMap © CARTO',
+        // 使用信息最全的 OSM 标准底图
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap',
             maxZoom: 19
         }).addTo(map);
 

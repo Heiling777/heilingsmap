@@ -9,9 +9,9 @@
         body { margin: 0; padding: 0; font-family: sans-serif; background-color: #fce4ec; }
         #map { height: 100vh; width: 100%; background-color: #fce4ec; }
 
-        /* ✨ 治愈系干净滤镜：把极简白底图染成温柔的粉色 */
+        /* 💖 完美粉色滤镜：去高速化，柔和樱花粉 */
         .leaflet-tile-pane {
-            filter: sepia(0.6) saturate(2) hue-rotate(315deg) brightness(1.05);
+            filter: sepia(0.6) saturate(1.8) hue-rotate(315deg) brightness(1.05) contrast(0.9);
         }
 
         /* 弹窗样式 */
@@ -77,8 +77,8 @@
     <script>
         var map = L.map('map').setView([23.1291, 113.2644], 12);
 
-        // 使用 Carto Light 极简底图（无高速、无杂乱文字）
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        // 🌍 使用 Voyager 纯净底图（没有粗大高速线，只有精细街道）
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             attribution: '© OpenStreetMap © CARTO',
             maxZoom: 19
         }).addTo(map);

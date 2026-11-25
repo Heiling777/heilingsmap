@@ -9,9 +9,18 @@
         body { margin: 0; padding: 0; font-family: sans-serif; }
         #map { height: 100vh; width: 100%; }
         
-        /* 纯净粉色滤镜：增加了对比度，让河流湖泊的蓝色更明显，淡化陆地 */
+        /* 魔法滤镜：完美粉色陆地 + 湛蓝水系 */
         .leaflet-tile-pane {
-            filter: sepia(1) saturate(2.8) hue-rotate(315deg) brightness(1.05) contrast(1.15);
+            /* 第一层滤镜：提亮并去色，准备上色 */
+            filter: grayscale(100%) brightness(1.15) contrast(0.85);
+            /* 使用混合模式把灰白染成粉色 */
+            mix-blend-mode: multiply; 
+            opacity: 0.95;
+        }
+        
+        /* 单独给地图容器加一层粉色底色，混合后陆地变粉 */
+        #map {
+            background-color: #ffb6c1; /* 樱花粉底色 */
         }
 
         /* 极简风格的白色弹窗 */
@@ -76,19 +85,19 @@
     <div id="map"></div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // 初始化地图：聚焦广州，缩放级别调为 11
         var map = L.map('map').setView([23.1291, 113.2644], 11);
 
-        // 底图：使用 Voyager 风格（这条风格的河流湖泊本身就是蓝色，配合滤镜效果极佳）
-        L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_5fvj_1_73567b6107ac9f11563207c5', {
+        // 换成极其干净的灰白底图（Carto Light No Labels）
+        // 它有极其详细的街道、水系、建筑轮廓，但没有杂乱的颜色
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
             attribution: '© OpenStreetMap © CARTO',
             maxZoom: 19
         }).addTo(map);
 
-        // 自定义浅蓝色水滴地标图标
+        // 浅蓝色水滴地标图标
         var blueIcon = L.divIcon({
             className: 'custom-blue-marker',
-            html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36" fill="#8ab4f8" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36" fill="#4a90e2" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"></path>
                     <circle cx="12" cy="9" r="3" fill="#ffffff"></circle>
                    </svg>`,
@@ -97,10 +106,8 @@
             popupAnchor: [0, -32]
         });
 
-        // 用于存放所有已生成的地标，防止重复渲染
         var markers = {};
 
-        // 渲染已有数据（页面加载时运行一次）
         function loadAllMarkers() {
             var allNotes = JSON.parse(localStorage.getItem('myMapNotes') || '{}');
             for (var key in allNotes) {
@@ -111,23 +118,17 @@
             }
         }
 
-        // 创建或更新一个地标
         function createOrUpdateMarker(lat, lng, notes) {
             var key = lat.toFixed(5) + ',' + lng.toFixed(5);
-            
-            // 如果已经有这个地标，就只更新弹窗内容
             if (markers[key]) {
                 markers[key].setPopupContent(generatePopupHTML(lat, lng, notes));
                 return;
             }
-
-            // 如果没有，就新建一个浅蓝色地标
             var marker = L.marker([lat, lng], { icon: blueIcon }).addTo(map);
             marker.bindPopup(generatePopupHTML(lat, lng, notes));
             markers[key] = marker;
         }
 
-        // 生成弹窗的 HTML（批注列表 + 输入框）
         function generatePopupHTML(lat, lng, notes) {
             var notesHTML = notes.map(function(note) {
                 return `<div class="msg-item">${note}</div>`;
@@ -144,19 +145,16 @@
             `;
         }
 
-        // 地图点击事件：只能在空白处点出新地标
         map.on('click', function(e) {
             var lat = e.latlng.lat;
             var lng = e.latlng.lng;
             var key = lat.toFixed(5) + ',' + lng.toFixed(5);
             var allNotes = JSON.parse(localStorage.getItem('myMapNotes') || '{}');
 
-            // 如果这个点还没有任何批注，先建一个空列表
             if (!allNotes[key]) {
                 allNotes[key] = [];
             }
 
-            // 创建新地标并自动打开弹窗
             if (!markers[key]) {
                 var marker = L.marker([lat, lng], { icon: blueIcon }).addTo(map);
                 marker.bindPopup(generatePopupHTML(lat, lng, allNotes[key])).openPopup();
@@ -164,7 +162,6 @@
             }
         });
 
-        // 添加批注的函数
         function addNote(lat, lng, btn) {
             var textarea = btn.previousElementSibling;
             var content = textarea.value.trim();
@@ -172,18 +169,15 @@
 
             var allNotes = JSON.parse(localStorage.getItem('myMapNotes') || '{}');
             var key = lat.toFixed(5) + ',' + lng.toFixed(5);
-            
             allNotes[key].push(content);
             localStorage.setItem('myMapNotes', JSON.stringify(allNotes));
 
-            // 更新当前地标的弹窗内容
             var marker = markers[key];
             if (marker) {
                 marker.setPopupContent(generatePopupHTML(lat, lng, allNotes[key]));
             }
         }
 
-        // 初始化加载
         loadAllMarkers();
     </script>
 </body>
